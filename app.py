@@ -55,7 +55,7 @@ def _seed_admin(app):
     print(f"[TutorAI] Seeded admin account -> {email} / {app.config['ADMIN_PASSWORD']}")
 
 
-app = flask_app()
+app = Flask(__name__)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
