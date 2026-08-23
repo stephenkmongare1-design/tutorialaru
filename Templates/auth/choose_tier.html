@@ -1,0 +1,49 @@
+{% extends "auth/_auth_base.html" %}
+{% block title %}Choose teacher tier{% endblock %}
+{% block card_size %}wide{% endblock %}
+{% block content %}
+<div class="step-dots"><span class="active"></span><span class="active"></span><span class="active"></span><span></span></div>
+<h4 class="fw-bold text-center mb-1">Choose your teacher type</h4>
+<p class="text-muted text-center mb-4">Step 3 of 4 — billed monthly</p>
+<form method="POST">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="tier-card d-block text-center">
+        <input type="radio" name="tier" value="standard" class="d-none tier-radio" required {{ 'checked' if profile.tier=='standard' }}>
+        <i class="bi bi-person-check fs-2 mb-2 d-block" style="color:var(--primary)"></i>
+        <div class="fw-bold">{{ labels.standard }}</div>
+        <div class="price">KES {{ '{:,}'.format(prices.standard) }}<span class="fs-6 text-muted">/mo</span></div>
+      </label>
+    </div>
+    <div class="col-md-4">
+      <label class="tier-card d-block text-center">
+        <input type="radio" name="tier" value="national" class="d-none tier-radio" {{ 'checked' if profile.tier=='national' }}>
+        <i class="bi bi-award fs-2 mb-2 d-block" style="color:var(--primary)"></i>
+        <div class="fw-bold">{{ labels.national }}</div>
+        <div class="price">KES {{ '{:,}'.format(prices.national) }}<span class="fs-6 text-muted">/mo</span></div>
+      </label>
+    </div>
+    <div class="col-md-4">
+      <label class="tier-card d-block text-center">
+        <input type="radio" name="tier" value="international" class="d-none tier-radio" {{ 'checked' if profile.tier=='international' }}>
+        <i class="bi bi-globe fs-2 mb-2 d-block" style="color:var(--primary)"></i>
+        <div class="fw-bold">{{ labels.international }}</div>
+        <div class="price">KES {{ '{:,}'.format(prices.international) }}<span class="fs-6 text-muted">/mo</span></div>
+      </label>
+    </div>
+  </div>
+  <button class="btn btn-brand w-100 py-2 mt-4" type="submit">Continue to payment <i class="bi bi-arrow-right"></i></button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.tier-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    document.querySelectorAll('.tier-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    card.querySelector('input').checked = true;
+  });
+  if(card.querySelector('input').checked) card.classList.add('selected');
+});
+</script>
+{% endblock %}

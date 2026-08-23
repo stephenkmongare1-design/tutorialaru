@@ -1,0 +1,25 @@
+{% extends "auth/_auth_base.html" %}
+{% block title %}Pay for classes{% endblock %}
+{% block content %}
+<div class="step-dots"><span class="active"></span><span class="active"></span><span class="active"></span><span class="active"></span></div>
+<h4 class="fw-bold text-center mb-1">Pay for your classes</h4>
+<p class="text-muted text-center mb-4">Step 4 of 4 — {{ label }}</p>
+
+<div class="text-center mb-4">
+  <div class="text-muted small">Amount due monthly</div>
+  <div class="display-6 fw-bold" style="color:var(--primary)">KES {{ '{:,}'.format(amount) }}</div>
+</div>
+
+<form method="POST">
+  <div class="mb-3">
+    <label class="form-label fw-semibold">M-Pesa phone number</label>
+    <input class="form-control" name="phone" placeholder="07xx xxx xxx" required>
+    <div class="form-text">You'll receive an STK push prompt to complete payment.</div>
+  </div>
+  <button class="btn btn-accent w-100 py-2" type="submit"><i class="bi bi-phone me-1"></i> Pay with M-Pesa</button>
+</form>
+<p class="text-muted small text-center mt-3 mb-0">
+  <i class="bi bi-info-circle"></i> MVP mode: payment is recorded instantly so you can try the whole flow.
+  A live deployment would connect this to Safaricom's Daraja STK Push API.
+</p>
+{% endblock %}

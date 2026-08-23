@@ -1,0 +1,35 @@
+{% extends "auth/_auth_base.html" %}
+{% block title %}Choose category{% endblock %}
+{% block card_size %}wide{% endblock %}
+{% block content %}
+<div class="step-dots"><span class="active"></span><span class="active"></span><span></span><span></span></div>
+<h4 class="fw-bold text-center mb-1">Which category are you in?</h4>
+<p class="text-muted text-center mb-4">Step 2 of 4 — this helps us match the right teacher &amp; materials</p>
+<form method="POST">
+  <div class="row g-3">
+    {% set icons = {'pre_primary':'bi-emoji-smile','primary':'bi-backpack2','junior_school':'bi-journal-text','senior_school':'bi-mortarboard'} %}
+    {% for key, label in categories.items() %}
+    <div class="col-md-6">
+      <label class="category-card d-block">
+        <input type="radio" name="category" value="{{ key }}" class="d-none cat-radio" {{ 'checked' if profile.category==key }} required>
+        <i class="bi {{ icons.get(key,'bi-mortarboard') }}"></i>
+        <div class="fw-bold">{{ label }}</div>
+      </label>
+    </div>
+    {% endfor %}
+  </div>
+  <button class="btn btn-brand w-100 py-2 mt-4" type="submit">Continue <i class="bi bi-arrow-right"></i></button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.category-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    card.querySelector('input').checked = true;
+  });
+  if(card.querySelector('input').checked) card.classList.add('selected');
+});
+</script>
+{% endblock %}
