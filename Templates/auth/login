@@ -1,0 +1,12 @@
+{% extends "auth/_auth_base.html" %} {% block title %}Log in{% endblock %} {% block content %}
+Welcome back
+Log in to your TutorAI account
+
+Email 
+Password 
+Log in
+New here? Create an account
+
+Back home
+
+{% endblock %}
