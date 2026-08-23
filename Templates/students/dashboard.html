@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Welcome back, {{ session.name.split(' ')[0] }}{% endblock %}
+{% block page_subtitle %}{{ profile.display_category() }} · {{ tier_labels.get(profile.tier, profile.tier) }}{% endblock %}
+{% block content %}
+
+{% if not profile.teacher_id %}
+<div class="alert alert-warning"><i class="bi bi-hourglass-split me-1"></i> You're all paid up — we're matching you with a teacher. Check back shortly, or contact the admin.</div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-primary"><i class="bi bi-clipboard-check"></i></div>
+      <div class="stat-value">{{ assignments|length }}</div>
+      <div class="stat-label">Recent Assignments</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-accent"><i class="bi bi-camera-video"></i></div>
+      <div class="stat-value">{{ upcoming|length }}</div>
+      <div class="stat-label">Upcoming Live Classes</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-info"><i class="bi bi-person-video3"></i></div>
+      <div class="stat-value" style="font-size:1.1rem;">{{ profile.teacher.user.full_name if profile.teacher else 'Pending' }}</div>
+      <div class="stat-label">My Teacher</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-warning"><i class="bi bi-stars"></i></div>
+      <div class="stat-value" style="font-size:1.1rem;">Ask me!</div>
+      <div class="stat-label"><a href="{{ url_for('student.ai_tutor') }}">Open AI Tutor</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header-plain"><span><i class="bi bi-clipboard-check me-1"></i> Recent Assignments</span><a href="{{ url_for('student.assignments') }}" class="small">View all</a></div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <tbody>
+          {% for a in assignments %}
+            {% set sub = my_subs.get(a.id) %}
+            <tr>
+              <td>
+                <a href="{{ url_for('student.take_assignment', aid=a.id) }}" class="text-decoration-none text-dark fw-semibold">{{ a.title }}</a>
+                <div class="text-muted small">{{ categories.get(a.category, a.category) }}</div>
+              </td>
+              <td class="text-end">
+                {% if sub and sub.status == 'marked' %}<span class="badge-pill bg-soft-accent">{{ sub.score }}/{{ sub.max_score }}</span>
+                {% elif sub and sub.status == 'submitted' %}<span class="badge-pill bg-soft-warning">Submitted</span>
+                {% else %}<span class="badge-pill bg-soft-danger">Pending</span>{% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td class="text-muted text-center py-3">No assignments yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header-plain"><span><i class="bi bi-camera-video me-1"></i> Upcoming Live Classes</span><a href="{{ url_for('student.live') }}" class="small">View all</a></div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <tbody>
+          {% for c in upcoming %}
+            <tr>
+              <td>{{ c.title }}<div class="text-muted small">{{ c.scheduled_at.strftime('%d %b, %H:%M') if c.scheduled_at }}</div></td>
+              <td class="text-end"><a href="{{ c.meeting_link }}" target="_blank" class="btn btn-sm btn-accent">Join</a></td>
+            </tr>
+          {% else %}
+            <tr><td class="text-muted text-center py-3">Nothing scheduled yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

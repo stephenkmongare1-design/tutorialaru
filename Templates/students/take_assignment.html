@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ a.title }}{% endblock %}
+{% block page_title %}{{ a.title }}{% endblock %}
+{% block page_subtitle %}{{ a.instructions or '' }}{% endblock %}
+{% block content %}
+
+<div class="d-flex gap-2 mb-3">
+  {% if a.source_filename %}
+  <a href="{{ url_for('files.get_file', subfolder='assignments', filename=a.source_filename) }}" target="_blank" class="btn btn-sm btn-outline-brand"><i class="bi bi-download"></i> Download original assignment</a>
+  {% endif %}
+</div>
+
+{% if sub.status == 'marked' %}
+<div class="alert alert-success">
+  <strong>Marked:</strong> {{ sub.score }} / {{ sub.max_score }}
+  {% if sub.feedback %}<div class="small mt-1">{{ sub.feedback }}</div>{% endif %}
+</div>
+{% elif sub.status == 'submitted' %}
+<div class="alert alert-warning">Submitted — waiting for your teacher to review/mark it.</div>
+{% endif %}
+
+{% if questions %}
+<form method="POST" action="{{ url_for('student.submit_assignment', aid=a.id) }}" enctype="multipart/form-data">
+  {% set saved = sub.answers() %}
+  {% for q in questions %}
+  <div class="question-card">
+    <div class="fw-semibold mb-2">Q{{ q.get('number', loop.index) }}. {{ q.question }}</div>
+
+    {% if q.type == 'mcq' and q.options %}
+      {% for opt in q.options %}
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="answer_{{ q.id }}" id="{{ q.id }}_{{ loop.index }}"
+               value="{{ opt[:1] }}" {{ 'checked' if saved.get(q.id) == opt[:1] }} {{ 'disabled' if sub.status=='marked' }}>
+        <label class="form-check-label" for="{{ q.id }}_{{ loop.index }}">{{ opt }}</label>
+      </div>
+      {% endfor %}
+    {% elif q.type == 'true_false' %}
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="answer_{{ q.id }}" id="{{ q.id }}_t" value="true" {{ 'checked' if saved.get(q.id)=='true' }} {{ 'disabled' if sub.status=='marked' }}>
+        <label class="form-check-label" for="{{ q.id }}_t">True</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="answer_{{ q.id }}" id="{{ q.id }}_f" value="false" {{ 'checked' if saved.get(q.id)=='false' }} {{ 'disabled' if sub.status=='marked' }}>
+        <label class="form-check-label" for="{{ q.id }}_f">False</label>
+      </div>
+    {% else %}
+      <input type="text" class="form-control" name="answer_{{ q.id }}" value="{{ saved.get(q.id, '') }}" placeholder="Type your answer" {{ 'disabled' if sub.status=='marked' }}>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  {% if sub.status != 'marked' %}
+  <button class="btn btn-brand" type="submit"><i class="bi bi-check2-circle me-1"></i> Submit Answers</button>
+  {% endif %}
+</form>
+
+{% else %}
+<div class="card p-4 mb-3">
+  <p class="text-muted">This assignment doesn't have on-screen questions yet. Download it above, work on paper, then upload a photo or PDF of your answers below.</p>
+  <form method="POST" action="{{ url_for('student.submit_assignment', aid=a.id) }}" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Upload your answers (PDF or photo)</label>
+      <input type="file" class="form-control" name="upload_file" accept=".pdf,.png,.jpg,.jpeg,.webp" {{ 'required' if not sub.upload_filename }}>
+    </div>
+    {% if sub.status != 'marked' %}
+    <button class="btn btn-brand" type="submit"><i class="bi bi-upload me-1"></i> Submit</button>
+    {% endif %}
+  </form>
+  {% if sub.upload_filename %}
+  <a href="{{ url_for('files.get_file', subfolder='submissions', filename=sub.upload_filename) }}" target="_blank" class="small mt-2 d-inline-block">View my uploaded answer</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

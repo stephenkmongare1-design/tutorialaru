@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}AI Tutor{% endblock %}
+{% block page_title %}AI Tutor{% endblock %}
+{% block page_subtitle %}Ask anything about your schoolwork, any time{% endblock %}
+{% block content %}
+
+{% if not configured %}
+<div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i> AI Tutor isn't configured yet. Ask your admin to set it up.</div>
+{% endif %}
+
+<div class="card p-3 mb-3" style="min-height:420px; max-height:60vh; overflow-y:auto;" id="chat-box">
+  {% for m in history %}
+    <div class="chat-bubble {{ 'user' if m.sender=='user' else 'ai' }}">{{ m.content }}</div>
+  {% else %}
+    <div class="empty-state"><i class="bi bi-stars"></i>Stuck on something? Ask me to explain it step by step.</div>
+  {% endfor %}
+</div>
+
+<form method="POST" action="{{ url_for('student.ai_tutor_send') }}" class="d-flex gap-2">
+  <input class="form-control" name="message" placeholder="e.g. Can you explain how to add fractions?" required autofocus>
+  <button class="btn btn-brand"><i class="bi bi-send"></i></button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  var box = document.getElementById('chat-box');
+  box.scrollTop = box.scrollHeight;
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Assignments{% endblock %}
+{% block page_title %}Assignments{% endblock %}
+{% block page_subtitle %}{{ assignments|length }} from your teacher{% endblock %}
+{% block content %}
+<div class="row g-3">
+  {% for a in assignments %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="badge-pill bg-soft-primary">{{ a.category }}</span>
+        {% set sub = my_subs.get(a.id) %}
+        {% if sub and sub.status == 'marked' %}<span class="badge-pill bg-soft-accent">{{ sub.score }}/{{ sub.max_score }}</span>
+        {% elif sub and sub.status == 'submitted' %}<span class="badge-pill bg-soft-warning">Submitted</span>
+        {% else %}<span class="badge-pill bg-soft-danger">Not started</span>{% endif %}
+      </div>
+      <div class="fw-bold mb-1">{{ a.title }}</div>
+      <div class="text-muted small mb-2">{{ a.instructions[:90] if a.instructions else '' }}</div>
+      <div class="text-muted small mb-3">{% if a.due_date %}Due {{ a.due_date.strftime('%d %b, %H:%M') }}{% endif %}</div>
+      <div class="d-flex gap-2 mt-auto">
+        <a href="{{ url_for('student.take_assignment', aid=a.id) }}" class="btn btn-sm btn-brand flex-fill">
+          {% if sub and sub.status != 'not_started' %}Review{% else %}Start{% endif %}
+        </a>
+        {% if a.source_filename %}
+        <a href="{{ url_for('files.get_file', subfolder='assignments', filename=a.source_filename) }}" target="_blank" class="btn btn-sm btn-outline-brand"><i class="bi bi-download"></i></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state w-100"><i class="bi bi-clipboard-check"></i>No assignments yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}
