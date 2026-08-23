@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}My Students{% endblock %}
+{% block page_title %}My Students{% endblock %}
+{% block page_subtitle %}{{ students|length }} students assigned to you{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0 align-middle">
+      <thead><tr><th>Name</th><th>Category</th><th>Guardian</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for s in students %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ s.user.full_name }}</div>
+            <div class="text-muted small">{{ s.user.email }} {% if s.user.phone %}· {{ s.user.phone }}{% endif %}</div>
+          </td>
+          <td class="small">{{ categories.get(s.category, s.category) }}</td>
+          <td class="small text-muted">{{ s.guardian_name or '—' }} {% if s.guardian_phone %}({{ s.guardian_phone }}){% endif %}</td>
+          <td>
+            {% if s.status == 'active' %}<span class="badge-pill bg-soft-accent">Active</span>
+            {% else %}<span class="badge-pill bg-soft-warning">{{ s.status }}</span>{% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" class="text-muted text-center py-4">
+          No students yet. If you signed up on the free plan, ask the admin to register your students under you.
+        </td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

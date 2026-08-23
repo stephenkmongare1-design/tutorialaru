@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Class Recordings{% endblock %}
+{% block page_title %}Class Recordings{% endblock %}
+{% block page_subtitle %}Upload recorded lessons for your students{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="card p-4">
+      <h6 class="fw-bold mb-3">Upload a recording</h6>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Title</label>
+          <input class="form-control" name="title" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Category</label>
+          <select class="form-select" name="category" required>
+            {% for key, label in categories.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Description</label>
+          <textarea class="form-control" name="description" rows="2"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Video file</label>
+          <input type="file" class="form-control" name="video_file" accept=".mp4,.webm,.mov,.mkv" required>
+        </div>
+        <button class="btn btn-brand w-100"><i class="bi bi-upload me-1"></i> Upload</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="row g-3">
+      {% for r in recordings %}
+      <div class="col-md-6">
+        <div class="card p-3 h-100">
+          <video controls class="w-100 rounded mb-2" style="background:#000;">
+            <source src="{{ url_for('files.get_file', subfolder='recordings', filename=r.filename) }}">
+          </video>
+          <div class="fw-semibold small">{{ r.title }}</div>
+          <div class="text-muted small">{{ categories.get(r.category, r.category) }} · {{ r.uploaded_at.strftime('%d %b') }}</div>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-state w-100"><i class="bi bi-play-btn"></i>No recordings uploaded yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

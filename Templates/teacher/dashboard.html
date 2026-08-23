@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Welcome back, {{ session.name.split(' ')[0] }}{% endblock %}
+{% block page_subtitle %}{{ profile.tier|capitalize }} Teacher{% endblock %}
+{% block content %}
+
+{% if profile.license_status != 'active' %}
+<div class="alert alert-warning d-flex justify-content-between align-items-center">
+  <div><i class="bi bi-exclamation-triangle me-1"></i> Your license isn't active yet
+    {% if profile.license_status == 'free_pending_admin' %}— you're on the free plan pending admin approval.{% endif %}
+  </div>
+</div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-primary"><i class="bi bi-people"></i></div>
+      <div class="stat-value">{{ students|length }}</div>
+      <div class="stat-label">My Students</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-accent"><i class="bi bi-clipboard-check"></i></div>
+      <div class="stat-value">{{ assignments|length }}</div>
+      <div class="stat-label">Recent Assignments</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-warning"><i class="bi bi-hourglass-split"></i></div>
+      <div class="stat-value">{{ pending_marking }}</div>
+      <div class="stat-label">Awaiting Marking</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-info"><i class="bi bi-camera-video"></i></div>
+      <div class="stat-value">{{ upcoming|length }}</div>
+      <div class="stat-label">Upcoming Live Classes</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header-plain"><span><i class="bi bi-people me-1"></i> My Students</span><a href="{{ url_for('teacher.students') }}" class="small">View all</a></div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <tbody>
+          {% for s in students[:6] %}
+            <tr><td>{{ s.user.full_name }}</td><td class="text-muted small">{{ categories.get(s.category, s.category) }}</td></tr>
+          {% else %}
+            <tr><td class="text-muted text-center py-3">No students assigned to you yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header-plain"><span><i class="bi bi-camera-video me-1"></i> Upcoming Live Classes</span><a href="{{ url_for('teacher.live') }}" class="small">Schedule new</a></div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <tbody>
+          {% for c in upcoming %}
+            <tr><td>{{ c.title }}</td><td class="text-muted small">{{ c.scheduled_at.strftime('%d %b, %H:%M') if c.scheduled_at }}</td></tr>
+          {% else %}
+            <tr><td class="text-muted text-center py-3">Nothing scheduled yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-12">
+    <div class="card p-3 d-flex flex-row flex-wrap gap-2">
+      <a href="{{ url_for('teacher.new_assignment') }}" class="btn btn-brand btn-sm"><i class="bi bi-plus-lg"></i> New Assignment</a>
+      <a href="{{ url_for('teacher.live') }}" class="btn btn-outline-brand btn-sm"><i class="bi bi-camera-video"></i> Schedule Live Class</a>
+      <a href="{{ url_for('teacher.recordings') }}" class="btn btn-outline-brand btn-sm"><i class="bi bi-upload"></i> Upload Recording</a>
+      <a href="{{ url_for('teacher.library') }}" class="btn btn-outline-brand btn-sm"><i class="bi bi-journal-bookmark"></i> Add to Library</a>
+      <a href="{{ url_for('teacher.ai_tutor') }}" class="btn btn-outline-brand btn-sm"><i class="bi bi-stars"></i> Ask AI Assistant</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}New Assignment{% endblock %}
+{% block page_title %}New Assignment{% endblock %}
+{% block page_subtitle %}Send work to all your students in a category{% endblock %}
+{% block content %}
+<div class="card p-4" style="max-width:700px;">
+  <form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Title</label>
+      <input class="form-control" name="title" required placeholder="e.g. Fractions Worksheet 3">
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Category</label>
+        <select class="form-select" name="category" required>
+          {% for key, label in categories.items() %}
+          <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Due date (optional)</label>
+        <input type="datetime-local" class="form-control" name="due_date">
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Instructions</label>
+      <textarea class="form-control" name="instructions" rows="2" placeholder="Any notes for students"></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Upload the assignment (PDF or photo)</label>
+      <input type="file" class="form-control" name="source_file" accept=".pdf,.png,.jpg,.jpeg,.webp">
+      <div class="form-text">Scan or photograph your worksheet/exam. Students can still download the original file too.</div>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="auto_parse" id="auto_parse" checked>
+      <label class="form-check-label" for="auto_parse">
+        Let AI convert this into questions students can tick/answer on screen
+      </label>
+    </div>
+    <button class="btn btn-brand" type="submit"><i class="bi bi-send me-1"></i> Create &amp; send to my students</button>
+  </form>
+  <p class="text-muted small mt-3 mb-0">
+    <i class="bi bi-info-circle"></i> No file? You can also click "Generate with AI" from the assignment page afterwards to create questions from a topic.
+  </p>
+</div>
+{% endblock %}

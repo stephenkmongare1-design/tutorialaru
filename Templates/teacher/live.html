@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Live Classes{% endblock %}
+{% block page_title %}Live Classes{% endblock %}
+{% block page_subtitle %}Schedule and manage your live sessions{% endblock %}
+{% block content %}
+
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="card p-4">
+      <h6 class="fw-bold mb-3">Schedule a new class</h6>
+      <form method="POST">
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Title</label>
+          <input class="form-control" name="title" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Category</label>
+          <select class="form-select" name="category" required>
+            {% for key, label in categories.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Date &amp; time</label>
+          <input type="datetime-local" class="form-control" name="scheduled_at" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Duration (minutes)</label>
+          <input type="number" class="form-control" name="duration_minutes" value="60">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Meeting link</label>
+          <input class="form-control" name="meeting_link" placeholder="Zoom / Google Meet link" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Notes (optional)</label>
+          <textarea class="form-control" name="description" rows="2"></textarea>
+        </div>
+        <button class="btn btn-brand w-100">Schedule</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header-plain">All scheduled classes</div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <tbody>
+          {% for c in classes %}
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ c.title }}</div>
+                <div class="text-muted small">{{ categories.get(c.category, c.category) }} · {{ c.scheduled_at.strftime('%d %b %Y, %H:%M') if c.scheduled_at }}</div>
+              </td>
+              <td class="text-end"><a href="{{ c.meeting_link }}" target="_blank" class="btn btn-sm btn-accent"><i class="bi bi-camera-video"></i> Join</a></td>
+            </tr>
+          {% else %}
+            <tr><td class="text-muted text-center py-3">No classes scheduled yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

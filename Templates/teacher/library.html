@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Library{% endblock %}
+{% block page_title %}Library{% endblock %}
+{% block page_subtitle %}Add books for your students{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card p-4">
+      <h6 class="fw-bold mb-3">Upload a book</h6>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Title</label>
+          <input class="form-control" name="title" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Author</label>
+          <input class="form-control" name="author">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Category</label>
+          <select class="form-select" name="category" required>
+            {% for key, label in categories.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">File (PDF or EPUB)</label>
+          <input type="file" class="form-control" name="book_file" accept=".pdf,.epub" required>
+        </div>
+        <button class="btn btn-brand w-100"><i class="bi bi-upload me-1"></i> Add to library</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#mine">My uploads</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#all">Whole library</a></li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="mine">
+        <div class="row g-3">
+          {% for b in my_books %}
+          <div class="col-md-6">
+            <div class="card p-3">
+              <div class="fw-semibold">{{ b.title }}</div>
+              <div class="text-muted small mb-2">{{ b.author or 'Unknown' }} · {{ categories.get(b.category, b.category) }}</div>
+              <a href="{{ url_for('files.get_file', subfolder='library', filename=b.filename) }}" target="_blank" class="btn btn-sm btn-outline-brand"><i class="bi bi-eye"></i> Open</a>
+            </div>
+          </div>
+          {% else %}
+          <div class="empty-state w-100"><i class="bi bi-journal-bookmark"></i>You haven't added any books yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="tab-pane fade" id="all">
+        <div class="row g-3">
+          {% for b in all_books %}
+          <div class="col-md-6">
+            <div class="card p-3">
+              <div class="fw-semibold">{{ b.title }}</div>
+              <div class="text-muted small mb-2">{{ b.author or 'Unknown' }} · {{ categories.get(b.category, b.category) }} · by {{ b.teacher.user.full_name if b.teacher else 'Admin' }}</div>
+              <a href="{{ url_for('files.get_file', subfolder='library', filename=b.filename) }}" target="_blank" class="btn btn-sm btn-outline-brand"><i class="bi bi-eye"></i> Open</a>
+            </div>
+          </div>
+          {% else %}
+          <div class="empty-state w-100"><i class="bi bi-journal-bookmark"></i>Library is empty.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

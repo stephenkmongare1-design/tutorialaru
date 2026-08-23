@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ a.title }}{% endblock %}
+{% block page_title %}{{ a.title }}{% endblock %}
+{% block page_subtitle %}{{ submissions|length }} submission(s){% endblock %}
+{% block content %}
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card mb-3">
+      <div class="card-header-plain">
+        <span><i class="bi bi-file-earmark-text me-1"></i> Source &amp; questions</span>
+        <span class="badge-pill bg-soft-primary">{{ a.parse_status }}</span>
+      </div>
+      <div class="p-3">
+        {% if a.source_filename %}
+        <a href="{{ url_for('files.get_file', subfolder='assignments', filename=a.source_filename) }}" target="_blank" class="btn btn-sm btn-outline-brand mb-2"><i class="bi bi-download"></i> Download original file</a>
+        <form method="POST" action="{{ url_for('teacher.reparse_assignment', aid=a.id) }}" class="d-inline">
+          <button class="btn btn-sm btn-outline-brand mb-2"><i class="bi bi-arrow-repeat"></i> Re-run AI parsing</button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('teacher.generate_questions', aid=a.id) }}" class="btn btn-sm btn-outline-brand mb-2"><i class="bi bi-stars"></i> Generate questions with AI</a>
+
+        {% if a.questions() %}
+          <hr>
+          {% for q in a.questions() %}
+          <div class="question-card">
+            <div class="fw-semibold small mb-1">Q{{ q.get('number', loop.index) }}. {{ q.get('question') }}</div>
+            {% if q.get('type') == 'mcq' and q.get('options') %}
+              <ul class="small text-muted mb-1">
+                {% for opt in q.options %}<li>{{ opt }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+            <div class="small text-muted">Type: {{ q.get('type') }} {% if q.get('answer') %}· Answer key: <span class="text-dark fw-semibold">{{ q.answer }}</span>{% endif %}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small mt-2 mb-0">No interactive questions yet. Upload a file with auto-parse, re-run parsing, or generate with AI.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header-plain"><span><i class="bi bi-people me-1"></i> Submissions</span></div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <tbody>
+          {% for s in submissions %}
+            <tr>
+              <td>
+                <div class="fw-semibold small">{{ s.student.user.full_name }}</div>
+                <div class="text-muted small">
+                  {% if s.status == 'not_started' %}Not started
+                  {% elif s.status == 'submitted' %}Submitted, awaiting marking
+                  {% elif s.status == 'marked' %}Marked: {{ s.score }}/{{ s.max_score }}{% endif %}
+                </div>
+              </td>
+              <td class="text-end">
+                {% if s.upload_filename %}
+                <a href="{{ url_for('files.get_file', subfolder='submissions', filename=s.upload_filename) }}" target="_blank" class="btn btn-sm btn-outline-brand mb-1"><i class="bi bi-eye"></i></a>
+                {% endif %}
+                {% if s.status == 'submitted' %}
+                <form method="POST" action="{{ url_for('teacher.mark_submission', sub_id=s.id) }}" class="d-inline">
+                  {% if s.upload_filename %}
+                  <input type="hidden" name="marking_guide" value="Mark against the assignment questions and answer key fairly.">
+                  {% endif %}
+                  <button class="btn btn-sm btn-accent">AI Mark</button>
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td class="text-muted text-center py-3">No submissions yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Quick AI Marking{% endblock %}
+{% block page_title %}Quick AI Marking{% endblock %}
+{% block page_subtitle %}Give the AI the correct answer + a photo/PDF of the student's work{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card p-4">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Question / assignment context</label>
+          <textarea class="form-control" name="context" rows="3" placeholder="e.g. Grade 6 Maths CAT 2, questions 1-10 on fractions" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Correct answer / marking guide</label>
+          <textarea class="form-control" name="correct_answer" rows="4" placeholder="Paste the correct answers or marking scheme here" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Student's answers (PDF or photo)</label>
+          <input type="file" class="form-control" name="answer_file" accept=".pdf,.png,.jpg,.jpeg,.webp" required>
+        </div>
+        <button class="btn btn-brand w-100" type="submit"><i class="bi bi-check2-square me-1"></i> Mark with AI</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    {% if result %}
+    <div class="card p-4">
+      <h5 class="fw-bold">Result: {{ result.score }} / {{ result.max_score }}</h5>
+      <p class="text-muted">{{ result.feedback }}</p>
+      {% if result.per_question %}
+      <hr>
+      {% for pq in result.per_question %}
+      <div class="question-card">
+        <div class="small fw-semibold">{{ pq.question }}</div>
+        <div class="small">
+          {% if pq.awarded == true %}<span class="badge-pill bg-soft-accent">Correct</span>
+          {% elif pq.awarded == false %}<span class="badge-pill bg-soft-danger">Incorrect</span>
+          {% else %}<span class="badge-pill bg-soft-warning">Partial</span>{% endif %}
+          {{ pq.comment }}
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="bi bi-check2-square"></i>Results will appear here after marking.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
