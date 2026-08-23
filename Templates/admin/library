@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block title %}Library{% endblock %} {% block page_title %}Digital Library{% endblock %} {% block page_subtitle %}{{ books|length }} books across all teachers{% endblock %} {% block content %}
+{% for b in books %}
+{{ b.title }}
+{{ b.author or 'Unknown author' }}
+{{ categories.get(b.category, b.category) }}
+By {{ b.teacher.user.full_name if b.teacher else 'Admin' }}
+Open
+{% else %}
+No books uploaded yet.
+{% endfor %}
+{% endblock %}
