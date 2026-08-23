@@ -17,7 +17,6 @@ import re
 
 from anthropic import Anthropic
 from flask import current_app
-import fitz  # PyMuPDF
 from PIL import Image
 
 _client_cache = {}
