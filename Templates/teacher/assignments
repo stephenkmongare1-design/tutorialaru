@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block title %}Assignments{% endblock %} {% block page_title %}Assignments{% endblock %} {% block page_subtitle %}{{ assignments|length }} created{% endblock %} {% block content %}
+New Assignment
+{% for a in assignments %}
+{{ categories.get(a.category, a.category) }} {% if a.parse_status == 'done' %}AI-ready {% elif a.parse_status == 'processing' %}Processing {% elif a.parse_status == 'failed' %}Parse failed{% endif %}
+{{ a.title }}
+{{ a.instructions[:90] if a.instructions else 'No instructions given.' }}
+{{ a.created_at.strftime('%d %b %Y') }} {% if a.due_date %} · Due {{ a.due_date.strftime('%d %b') }}{% endif %}
+{% else %}
+No assignments yet. Create your first one.
+{% endfor %}
+{% endblock %}
