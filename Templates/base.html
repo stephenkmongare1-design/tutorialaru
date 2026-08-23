@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}TutorAI{% endblock %} · TutorAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-badge">T</div>
+      <div>TutorAI</div>
+    </div>
+
+    {% if session.role == 'admin' %}
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if request.endpoint=='admin.dashboard' }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <div class="sidebar-section-label">People</div>
+      <a href="{{ url_for('admin.teachers') }}" class="{{ 'active' if request.endpoint in ['admin.teachers','admin.add_teacher'] }}"><i class="bi bi-person-video3"></i> Teachers</a>
+      <a href="{{ url_for('admin.students') }}" class="{{ 'active' if request.endpoint in ['admin.students','admin.add_student'] }}"><i class="bi bi-mortarboard"></i> Students</a>
+      <div class="sidebar-section-label">Platform</div>
+      <a href="{{ url_for('admin.payments') }}" class="{{ 'active' if request.endpoint=='admin.payments' }}"><i class="bi bi-cash-coin"></i> Payments</a>
+      <a href="{{ url_for('admin.library') }}" class="{{ 'active' if request.endpoint=='admin.library' }}"><i class="bi bi-journal-bookmark"></i> Library</a>
+    </nav>
+    {% elif session.role == 'teacher' %}
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('teacher.dashboard') }}" class="{{ 'active' if request.endpoint=='teacher.dashboard' }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="{{ url_for('teacher.students') }}" class="{{ 'active' if request.endpoint=='teacher.students' }}"><i class="bi bi-people"></i> My Students</a>
+      <div class="sidebar-section-label">Teaching</div>
+      <a href="{{ url_for('teacher.assignments') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('teacher.assignment') or request.endpoint=='teacher.new_assignment' or request.endpoint=='teacher.generate_questions' }}"><i class="bi bi-clipboard-check"></i> Assignments</a>
+      <a href="{{ url_for('teacher.live') }}" class="{{ 'active' if request.endpoint=='teacher.live' }}"><i class="bi bi-camera-video"></i> Live Classes</a>
+      <a href="{{ url_for('teacher.recordings') }}" class="{{ 'active' if request.endpoint=='teacher.recordings' }}"><i class="bi bi-play-btn"></i> Class Recordings</a>
+      <a href="{{ url_for('teacher.library') }}" class="{{ 'active' if request.endpoint=='teacher.library' }}"><i class="bi bi-journal-bookmark"></i> Library</a>
+      <div class="sidebar-section-label">AI Tools</div>
+      <a href="{{ url_for('teacher.ai_tutor') }}" class="{{ 'active' if request.endpoint=='teacher.ai_tutor' }}"><i class="bi bi-stars"></i> AI Assistant</a>
+      <a href="{{ url_for('teacher.ai_mark_tool') }}" class="{{ 'active' if request.endpoint=='teacher.ai_mark_tool' }}"><i class="bi bi-check2-square"></i> Quick AI Marking</a>
+    </nav>
+    {% elif session.role == 'student' %}
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('student.dashboard') }}" class="{{ 'active' if request.endpoint=='student.dashboard' }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="{{ url_for('student.assignments') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('student.') and 'assignment' in request.endpoint }}"><i class="bi bi-clipboard-check"></i> Assignments</a>
+      <a href="{{ url_for('student.live') }}" class="{{ 'active' if request.endpoint=='student.live' }}"><i class="bi bi-camera-video"></i> Live Classes</a>
+      <a href="{{ url_for('student.recordings') }}" class="{{ 'active' if request.endpoint=='student.recordings' }}"><i class="bi bi-play-btn"></i> Recorded Classes</a>
+      <a href="{{ url_for('student.library') }}" class="{{ 'active' if request.endpoint=='student.library' }}"><i class="bi bi-journal-bookmark"></i> Library</a>
+      <div class="sidebar-section-label">AI Tools</div>
+      <a href="{{ url_for('student.ai_tutor') }}" class="{{ 'active' if request.endpoint=='student.ai_tutor' }}"><i class="bi bi-stars"></i> AI Tutor</a>
+    </nav>
+    {% endif %}
+
+    <div class="sidebar-footer">
+      <a href="{{ url_for('auth.logout') }}" style="color:#fca5a5; display:flex; align-items:center; gap:.5rem; font-weight:600; font-size:.88rem;">
+        <i class="bi bi-box-arrow-right"></i> Log out
+      </a>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <div class="topbar">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-light border d-md-none" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="bi bi-list"></i></button>
+        <div class="topbar-title">
+          {% block page_title %}Dashboard{% endblock %}
+          <small>{% block page_subtitle %}{% endblock %}</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge-pill bg-soft-primary text-capitalize">{{ session.role }}</span>
+        <div class="avatar-badge">{{ (session.name or 'U')[:1] }}</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category=='danger' else category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
