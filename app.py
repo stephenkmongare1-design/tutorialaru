@@ -12,11 +12,11 @@ def create_app():
 
     db.init_app(app)
 
-    from blueprints.auth import auth_bp
-    from blueprints.admin import admin_bp
-    from blueprints.teacher import teacher_bp
-    from blueprints.student import student_bp
-    from blueprints.files import files_bp
+    from Blueprints.auth import auth_bp
+    from Blueprints.admin import admin_bp
+    from Blueprints.teacher import teacher_bp
+    from Blueprints.student import student_bp
+    from Blueprints.files import files_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
