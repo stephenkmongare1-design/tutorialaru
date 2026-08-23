@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block title %}Library{% endblock %} {% block page_title %}Library{% endblock %} {% block page_subtitle %}Books for your category{% endblock %} {% block content %}
+{% for b in books %}
+{{ b.title }}
+{{ b.author or 'Unknown author' }}
+Read / Download
+{% else %}
+No books available for your category yet.
+{% endfor %}
+{% endblock %}
