@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Add Teacher{% endblock %}
+{% block page_title %}Add a Teacher{% endblock %}
+{% block page_subtitle %}Create a teacher account directly{% endblock %}
+{% block content %}
+<div class="card p-4" style="max-width:650px;">
+  <form method="POST">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Full name</label>
+      <input class="form-control" name="full_name" required>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Email</label>
+        <input type="email" class="form-control" name="email" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Phone</label>
+        <input class="form-control" name="phone">
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Temporary password</label>
+      <input class="form-control" name="password" placeholder="Leave blank to auto-generate: Teach@123">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Subjects</label>
+      <input class="form-control" name="subjects" placeholder="e.g. Mathematics, Chemistry">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Categories they can teach</label>
+      <div class="row">
+        {% for key, label in categories.items() %}
+        <div class="col-md-6">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categories" value="{{ key }}" id="ac_{{ key }}">
+            <label class="form-check-label" for="ac_{{ key }}">{{ label }}</label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Tier</label>
+      <select class="form-select" name="tier">
+        {% for key, label in labels.items() %}
+        <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="activate" id="activate" checked>
+      <label class="form-check-label" for="activate">Activate license immediately (skip payment)</label>
+    </div>
+    <button class="btn btn-brand" type="submit">Create teacher</button>
+  </form>
+</div>
+{% endblock %}

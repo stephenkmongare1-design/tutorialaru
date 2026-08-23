@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Teachers{% endblock %}
+{% block page_title %}Teachers{% endblock %}
+{% block page_subtitle %}{{ teachers|length }} total{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <form class="d-flex gap-2" method="get">
+    <input class="form-control form-control-sm" style="width:220px" name="q" value="{{ q }}" placeholder="Search teachers...">
+    <button class="btn btn-sm btn-outline-brand" type="submit">Search</button>
+  </form>
+  <a href="{{ url_for('admin.add_teacher') }}" class="btn btn-brand btn-sm"><i class="bi bi-plus-lg me-1"></i> Add Teacher</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0 align-middle">
+      <thead><tr><th>Name</th><th>Tier</th><th>Categories</th><th>License</th><th>Students</th><th></th></tr></thead>
+      <tbody>
+      {% for t in teachers %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ t.user.full_name }}</div>
+            <div class="text-muted small">{{ t.user.email }}</div>
+          </td>
+          <td><span class="badge-pill bg-soft-primary text-capitalize">{{ t.tier }}</span></td>
+          <td class="small">{% for c in (t.categories or '').split(',') if c %}{{ categories.get(c, c) }}<br>{% endfor %}</td>
+          <td>
+            {% if t.license_status == 'active' %}
+              <span class="badge-pill bg-soft-accent">Active</span>
+            {% elif t.license_status == 'free_pending_admin' %}
+              <span class="badge-pill bg-soft-warning">Free — pending approval</span>
+            {% else %}
+              <span class="badge-pill bg-soft-danger">{{ t.license_status }}</span>
+            {% endif %}
+          </td>
+          <td>{{ t.student_count() }}</td>
+          <td class="text-end">
+            {% if t.license_status != 'active' %}
+            <form method="POST" action="{{ url_for('admin.approve_teacher', tid=t.id) }}" class="d-inline">
+              <button class="btn btn-sm btn-accent">Approve</button>
+            </form>
+            {% endif %}
+            <form method="POST" action="{{ url_for('admin.toggle_teacher', tid=t.id) }}" class="d-inline">
+              <button class="btn btn-sm btn-outline-brand">{{ 'Disable' if t.user.is_active else 'Enable' }}</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="text-muted text-center py-4">No teachers yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

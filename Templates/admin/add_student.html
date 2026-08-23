@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Add Student{% endblock %}
+{% block page_title %}Add a Student{% endblock %}
+{% block page_subtitle %}Register a student and assign her/him to a teacher{% endblock %}
+{% block content %}
+<div class="card p-4" style="max-width:650px;">
+  <form method="POST">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Full name</label>
+      <input class="form-control" name="full_name" required>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Email</label>
+        <input type="email" class="form-control" name="email" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Phone</label>
+        <input class="form-control" name="phone">
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Temporary password</label>
+      <input class="form-control" name="password" placeholder="Leave blank to auto-generate: Learn@123">
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Category</label>
+        <select class="form-select" name="category" required>
+          {% for key, label in categories.items() %}
+          <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Tier</label>
+        <select class="form-select" name="tier">
+          {% for key, label in labels.items() %}
+          <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Assign to teacher</label>
+      <select class="form-select" name="teacher_id">
+        <option value="">Leave unassigned for now</option>
+        {% for t in teachers %}
+        <option value="{{ t.id }}">{{ t.user.full_name }} ({{ t.tier }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <hr>
+    <p class="small text-muted mb-2">Guardian (optional)</p>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Guardian name</label>
+        <input class="form-control" name="guardian_name">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Guardian phone</label>
+        <input class="form-control" name="guardian_phone">
+      </div>
+    </div>
+    <button class="btn btn-brand" type="submit">Create student</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+{% block page_subtitle %}{{ students|length }} total{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <form class="d-flex gap-2" method="get">
+    <input class="form-control form-control-sm" style="width:220px" name="q" value="{{ q }}" placeholder="Search students...">
+    <button class="btn btn-sm btn-outline-brand" type="submit">Search</button>
+  </form>
+  <a href="{{ url_for('admin.add_student') }}" class="btn btn-brand btn-sm"><i class="bi bi-plus-lg me-1"></i> Add Student</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0 align-middle">
+      <thead><tr><th>Name</th><th>Category</th><th>Tier</th><th>Status</th><th>Teacher</th><th style="width:260px">Reassign</th></tr></thead>
+      <tbody>
+      {% for s in students %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ s.user.full_name }}</div>
+            <div class="text-muted small">{{ s.user.email }}</div>
+          </td>
+          <td class="small">{{ categories.get(s.category, s.category or '—') }}</td>
+          <td><span class="badge-pill bg-soft-primary text-capitalize">{{ s.tier or '—' }}</span></td>
+          <td>
+            {% if s.status == 'active' %}<span class="badge-pill bg-soft-accent">Active</span>
+            {% elif s.status == 'pending_payment' %}<span class="badge-pill bg-soft-danger">Payment pending</span>
+            {% else %}<span class="badge-pill bg-soft-warning">Needs teacher</span>{% endif %}
+          </td>
+          <td>{{ s.teacher.user.full_name if s.teacher else '—' }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin.assign_student', sid=s.id) }}" class="d-flex gap-1">
+              <select name="teacher_id" class="form-select form-select-sm">
+                <option value="">Unassigned</option>
+                {% for t in teachers %}
+                <option value="{{ t.id }}" {{ 'selected' if s.teacher_id==t.id }}>{{ t.user.full_name }} ({{ t.tier }})</option>
+                {% endfor %}
+              </select>
+              <button class="btn btn-sm btn-outline-brand">Save</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="text-muted text-center py-4">No students yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

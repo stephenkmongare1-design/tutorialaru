@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+{% block page_subtitle %}Platform overview{% endblock %}
+{% block content %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-primary"><i class="bi bi-person-video3"></i></div>
+      <div class="stat-value">{{ stats.teachers }}</div>
+      <div class="stat-label">Teachers ({{ stats.active_teachers }} active)</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-accent"><i class="bi bi-mortarboard"></i></div>
+      <div class="stat-value">{{ stats.students }}</div>
+      <div class="stat-label">Students ({{ stats.active_students }} active)</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-warning"><i class="bi bi-hourglass-split"></i></div>
+      <div class="stat-value">{{ stats.unassigned_students }}</div>
+      <div class="stat-label">Awaiting teacher assignment</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-soft-info"><i class="bi bi-cash-coin"></i></div>
+      <div class="stat-value">KES {{ '{:,.0f}'.format(stats.revenue or 0) }}</div>
+      <div class="stat-label">Total revenue collected</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card mb-3">
+      <div class="card-header-plain">
+        <span><i class="bi bi-hourglass-split me-1"></i> Students awaiting a teacher</span>
+        <a href="{{ url_for('admin.students') }}" class="small">Manage all students</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead><tr><th>Student</th><th>Category</th><th>Tier</th><th></th></tr></thead>
+          <tbody>
+          {% for s in unassigned %}
+            <tr>
+              <td>{{ s.user.full_name }}</td>
+              <td>{{ s.display_category() }}</td>
+              <td class="text-capitalize">{{ s.tier }}</td>
+              <td><a href="{{ url_for('admin.students') }}" class="btn btn-sm btn-outline-brand">Assign</a></td>
+            </tr>
+          {% else %}
+            <tr><td colspan="4" class="text-muted text-center py-3">All students have a teacher assigned 🎉</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header-plain">
+        <span><i class="bi bi-person-video3 me-1"></i> Teachers pending approval (free tier)</span>
+        <a href="{{ url_for('admin.teachers') }}" class="small">Manage all teachers</a>
+      </div>
+      <div class="p-3">
+        {% if stats.pending_teachers %}
+        <p class="text-muted small mb-0">{{ stats.pending_teachers }} teacher(s) signed up for free and are waiting on your approval so their own students can be registered. Go to <a href="{{ url_for('admin.teachers') }}">Teachers</a> to review.</p>
+        {% else %}
+        <p class="text-muted small mb-0">No pending approvals right now.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header-plain">
+        <span><i class="bi bi-cash-coin me-1"></i> Recent payments</span>
+        <a href="{{ url_for('admin.payments') }}" class="small">View all</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead><tr><th>User</th><th>Purpose</th><th>Amount</th></tr></thead>
+          <tbody>
+          {% for p in recent_payments %}
+            <tr>
+              <td>{{ p.user.full_name }}</td>
+              <td class="text-capitalize">{{ p.purpose }}</td>
+              <td>KES {{ '{:,}'.format(p.amount) }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="3" class="text-muted text-center py-3">No payments yet</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

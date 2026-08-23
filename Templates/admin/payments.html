@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Payments{% endblock %}
+{% block page_title %}Payments{% endblock %}
+{% block page_subtitle %}{{ payments|length }} records{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0 align-middle">
+      <thead><tr><th>Date</th><th>User</th><th>Purpose</th><th>Method</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for p in payments %}
+        <tr>
+          <td class="small">{{ p.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+          <td>{{ p.user.full_name }} <span class="text-muted small">({{ p.user.role }})</span></td>
+          <td class="text-capitalize">{{ p.purpose }}</td>
+          <td class="text-uppercase small">{{ p.method }}</td>
+          <td class="small text-muted">{{ p.reference }}</td>
+          <td class="fw-semibold">KES {{ '{:,}'.format(p.amount) }}</td>
+          <td><span class="badge-pill bg-soft-accent text-capitalize">{{ p.status }}</span></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7" class="text-muted text-center py-4">No payments recorded yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
